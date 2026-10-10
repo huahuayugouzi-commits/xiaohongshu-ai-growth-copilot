@@ -426,7 +426,9 @@ async def _lifespan(_app: FastAPI):
     _stop_mp_login_on_shutdown()
 
 
-app = FastAPI(title="Easel", docs_url=None, redoc_url=None, lifespan=_lifespan)
+app = FastAPI(title="Growth Copilot", docs_url=None, redoc_url=None, lifespan=_lifespan)
+from easel.growth.api import router as growth_router
+app.include_router(growth_router)
 
 def _local_ports(env_port: str) -> set[str]:
     """本机写守卫放行的端口集合：固定的 7860/7870/5173，加上 `--port`/EASEL_PORT
@@ -1032,7 +1034,7 @@ async def index():
     react_index = REACT_DIR / "index.html"
     if react_index.is_file():
         return FileResponse(react_index, media_type="text/html", headers=no_cache)
-    return FileResponse(STATIC_DIR / "index.html", media_type="text/html", headers=no_cache)
+    return FileResponse(STATIC_DIR / "growth-not-built.html", media_type="text/html", headers=no_cache)
 
 
 @app.get("/onepage")

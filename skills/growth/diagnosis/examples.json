@@ -1,0 +1,12 @@
+[
+  {
+    "note": "示例不是当前用户事实。信息不足时保守弃答。",
+    "input": {"creator_goal": "我想做小红书，但不知道做什么。"},
+    "output": {
+      "positioning_hypothesis": {"positioning": "待补充信息后确定", "target_audience": "待补充信息后确定", "core_value": "需要先了解可提供的经验与素材", "differentiation": "暂不判断"},
+      "content_pillars": [], "strengths": [], "risks": ["目前信息不足，不能确定赛道"],
+      "missing_information": ["你有哪些经验、兴趣和可使用的内容素材？", "希望帮助谁解决什么问题？"],
+      "assumptions": [], "confidence": "low"
+    }
+  }
+]

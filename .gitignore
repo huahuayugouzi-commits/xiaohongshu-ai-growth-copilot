@@ -12,8 +12,25 @@ build/
 .env
 .env.local
 .env.xhs
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+cookies*.json
+*storage-state*.json
+pytest-cache-files-*/
 # setup.sh 默认把 Python 依赖装进项目内的 .venv（见 setup.sh 的虚拟环境分支）
 .venv/
+
+# Growth Copilot local business data (including SQLite journals)
+/data/
 
 # Docker
 docker/data/
@@ -34,6 +51,7 @@ Thumbs.db
 # Outputs (keep directory structure via .gitkeep, ignore actual content)
 outputs/**/*
 !outputs/**/.gitkeep
+!outputs/CROSS_DEVICE_SETUP.md
 
 # Assets (user materials are not tracked; curated brand/README media is)
 assets/**/*
