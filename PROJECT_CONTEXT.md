@@ -7,10 +7,10 @@ Phase 1: 完成。Phase 2: 完成并验收、冻结。
 Phase 3: PASS / FROZEN（2026-10-12），checkpoint 1711071。
 Research Task 1: PASS / FROZEN; user browser acceptance passed. 5 module cases,
 TypeScript/lint/build passed. Current-profile confirmation guide included.
-Research AI Analysis → Structured Research Card: implemented; awaiting user browser acceptance.
+Research AI Analysis → Structured Research Card: PASS / FROZEN; user browser acceptance passed.
 10 deterministic/mock Research module tests passed; 1 real synthetic-reference case
 passed schema/evidence validation and semantic review. tsc/lint/build passed.
-No Topics implemented. Next step is manual Research Card acceptance, then TOP 3 task.
+Current minimum task: TOP 3 Topics + Evidence Recommendation. No Studio implementation.
 Freeze evidence: docs/phase3-freeze.md. The following historical test log is retained;
 its earlier pending/blocker entries are superseded by the freeze evidence.
 Do not change Account / Diagnosis / Growth Data Layer except blocking regression.
