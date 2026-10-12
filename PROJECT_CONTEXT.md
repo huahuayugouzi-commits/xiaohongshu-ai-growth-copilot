@@ -4,7 +4,10 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 ## Current mode and status
 V0.1 Fast Track.
 Phase 1: 完成。Phase 2: 完成并验收、冻结。
-Phase 3: PASS / FROZEN（2026-10-12）。Research Task 1: 开始。
+Phase 3: PASS / FROZEN（2026-10-12），checkpoint 1711071。
+Research Task 1: Input + Persistence implemented; 5 module cases passed,
+TypeScript/lint/build passed. Browser manual acceptance of Research not yet claimed.
+Next minimum task: Research AI Analysis → Structured Research Card (not started).
 Freeze evidence: docs/phase3-freeze.md. The following historical test log is retained;
 its earlier pending/blocker entries are superseded by the freeze evidence.
 Do not change Account / Diagnosis / Growth Data Layer except blocking regression.
@@ -50,8 +53,13 @@ Core flow: Account → Diagnosis → Research → TOP 3 Topics → Studio Draft.
   large radii, soft shadows. Result fact/hypothesis/missing visual check pending.
 
 ## Blockers and next task
-Current: Phase 3 blockers resolved. Implement only Research Input + Persistence;
-then stop and report. Research AI Analysis is the next task, not in current scope.
+Current: Phase 3 blockers resolved. Research Input + Persistence implemented.
+Routes: GET/POST /api/growth/accounts/{account_id}/research and
+PATCH /api/growth/accounts/{account_id}/research/{research_id}/confirmation.
+Existing Phase 2 repository/schema unchanged. Blank counts are null, explicit 0
+remains 0; account isolation enforced. UI uses current account and reloads from DB.
+Restart backend to register new routes; frontend build is ready at #/research.
+Stop here. No Research AI, Topics, scraping, bulk import or search implemented.
 Historical checklist below is completed:
 1. User configures Growth LLM in local .env; never request or print the key.
 2. Run scripts/Verify-Phase3.cmd in normal host terminal.

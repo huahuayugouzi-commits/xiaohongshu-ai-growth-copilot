@@ -429,6 +429,8 @@ async def _lifespan(_app: FastAPI):
 app = FastAPI(title="Growth Copilot", docs_url=None, redoc_url=None, lifespan=_lifespan)
 from easel.growth.api import router as growth_router
 app.include_router(growth_router)
+from easel.growth.research_api import router as research_router
+app.include_router(research_router)
 
 def _local_ports(env_port: str) -> set[str]:
     """本机写守卫放行的端口集合：固定的 7860/7870/5173，加上 `--port`/EASEL_PORT
