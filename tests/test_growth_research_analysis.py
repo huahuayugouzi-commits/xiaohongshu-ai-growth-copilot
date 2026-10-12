@@ -6,7 +6,11 @@ from copy import deepcopy
 
 import pytest
 import httpx
-from tests.test_growth_research_api import research, payload
+from runpy import run_path
+# Both Easel and the publisher skill have a package named tests.
+# Load this local fixture by path so full-suite collection cannot select the other package.
+_support = run_path(str(Path(__file__).with_name('test_growth_research_api.py')))
+research, payload = _support['research'], _support['payload']
 from easel.growth.models import ResearchInput
 from easel.growth.llm import ModelReply, ModelError, ModelConfig
 from easel.growth.research_api import get_research_model

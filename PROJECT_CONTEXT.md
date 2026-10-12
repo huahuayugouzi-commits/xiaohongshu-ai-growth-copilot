@@ -10,7 +10,14 @@ TypeScript/lint/build passed. Current-profile confirmation guide included.
 Research AI Analysis → Structured Research Card: PASS / FROZEN; user browser acceptance passed.
 10 deterministic/mock Research module tests passed; 1 real synthetic-reference case
 passed schema/evidence validation and semantic review. tsc/lint/build passed.
-Current minimum task: TOP 3 Topics + Evidence Recommendation. No Studio implementation.
+Research AI frozen at 1081798. TOP 3 Topics + Evidence Recommendation implemented;
+pending host full regression and human browser acceptance. No Studio implementation.
+15 affected deterministic/mock tests passed, 2 live skipped. Latest Topics suite:
+5 deterministic/mock + 1 real model passed (21.90s). tsc/lint/build passed.
+Full-suite collection collision fixed in test imports only; sandbox regression
+stopped on pytest temp WinError 5 (14 passed, 5 skipped, 1 setup error).
+Next: host regression and browser Topics/evidence persistence acceptance;
+then Topic -> Studio Draft. See docs/topics-checkpoint.md.
 Freeze evidence: docs/phase3-freeze.md. The following historical test log is retained;
 its earlier pending/blocker entries are superseded by the freeze evidence.
 Do not change Account / Diagnosis / Growth Data Layer except blocking regression.
