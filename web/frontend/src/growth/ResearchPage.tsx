@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { request } from './api';
+import ResearchCard from './ResearchCard';
+import type { Analysis } from './ResearchCard';
 
 interface ResearchItem {
   id: string; account_id: string; source_url: string | null; title: string; body: string;
   likes: number | null; collects: number | null; comments: number | null;
   comment_samples: string[]; confirmed_for_topic: boolean;
+  analysis: Analysis | null;
 }
 const empty = { source_url: '', title: '', body: '', likes: '', collects: '', comments: '', comment_samples: '' };
 function count(value: string) {
@@ -52,8 +55,19 @@ export default function ResearchPage({ accountId, diagnosisConfirmed }: { accoun
     } catch (e) { setError(e instanceof Error ? e.message : '标记失败'); }
     finally { setBusy(false); }
   };
+  const analyze = async (item: ResearchItem, interrupt = false) => {
+    setBusy(true); setError(''); setNotice(interrupt ? '' : '正在分析参考内容…');
+    try {
+      const updated = await request<ResearchItem>(`${path}/${item.id}/analysis${interrupt ? '/interrupt' : ''}`, 'POST');
+      setItems(previous => previous.map(v => v.id === updated.id ? updated : v));
+      setNotice(interrupt ? '任务已标记中断。' : '分析已保存，请审阅后重新确认用于选题。');
+    } catch (e) {
+      setNotice(''); setError(e instanceof Error ? e.message : '分析失败');
+      await request<ResearchItem[]>(path).then(setItems).catch(() => undefined);
+    } finally { setBusy(false); }
+  };
   return <>
-    <div className="gc-page-heading"><span className="gc-eyebrow">RESEARCH · MANUAL INPUT</span><h1>保存值得研究的参考内容</h1><p>仅保存你手动提供的资料，不抓取、不执行 AI 分析。未知互动数据请留空，已知为零请填 0。</p></div>
+    <div className="gc-page-heading"><span className="gc-eyebrow">RESEARCH · MANUAL INPUT</span><h1>保存值得研究的参考内容</h1><p>手动保存后可逐篇分析，不自动抓取。未知互动数据请留空，已知为零请填 0。点击分析会将本篇内容发送给你配置的模型。</p></div>
     {error && <div className="gc-error" role="alert">{error}<button onClick={() => window.location.reload()}>刷新重试</button></div>}
     {notice && <div className="gc-success" role="status">{notice}</div>}
     <form className="gc-card gc-profile-form" onSubmit={e => { e.preventDefault(); void save(); }}>
@@ -74,7 +88,10 @@ export default function ResearchPage({ accountId, diagnosisConfirmed }: { accoun
         <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{item.body}</p>
         <p>点赞：{item.likes ?? '未知'} · 收藏：{item.collects ?? '未知'} · 评论：{item.comments ?? '未知'}</p>
         <h4>评论样本</h4>{item.comment_samples.length ? <ul>{item.comment_samples.map((v, i) => <li key={i}>{v}</li>)}</ul> : <p>未提供评论样本</p>}
-        <button disabled={busy} onClick={() => { void confirm(item); }}>{item.confirmed_for_topic ? '取消用于选题' : '确认用于选题'}</button>
+        <button disabled={busy || item.analysis?.status === 'running' || item.analysis?.status === 'failed'} onClick={() => { void confirm(item); }}>{item.confirmed_for_topic ? '取消用于选题' : '确认用于选题'}</button>
+        <button disabled={busy || item.analysis?.status === 'running'} onClick={() => { void analyze(item); }}>{item.analysis?.status === 'failed' ? '重试分析' : item.analysis?.status === 'succeeded' ? '重新分析' : '分析参考内容'}</button>
+        {item.analysis?.status === 'running' && <button disabled={busy} onClick={() => { if (window.confirm('标记任务失败并允许重试？原请求返回的结果将被拒绝。')) void analyze(item, true); }}>标记分析已中断</button>}
+        <ResearchCard analysis={item.analysis} />
       </article>)}
     </section>
   </>;

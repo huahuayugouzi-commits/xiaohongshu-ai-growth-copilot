@@ -1,11 +1,12 @@
 """Manual reference input only; no collection or model execution."""
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
 from urllib.parse import urlsplit
 
 from .api import call, get_service
 from .models import Count, ResearchInput
 from .service import GrowthService
+from .research_analysis import ResearchModel, ResearchAnalysisRepository, ResearchAnalysisFailure, analyze_item
 
 router = APIRouter(prefix="/api/growth/accounts/{account_id}/research", tags=["Growth Research"])
 
@@ -59,4 +60,29 @@ def create_item(account_id: str, data: ManualResearch, service: GrowthService = 
 
 @router.patch("/{research_id}/confirmation")
 def confirm_item(account_id: str, research_id: str, data: Confirmation, service: GrowthService = Depends(get_service)):
+    item = call(lambda: service.repository.get('research_items', research_id, account_id=account_id))
+    if data.confirmed_for_topic and item.analysis and item.analysis.get('status') in {'running', 'failed'}:
+        raise HTTPException(409, '请先完成分析，再确认用于选题。')
     return call(service.repository.confirm_research, account_id, research_id, data.confirmed_for_topic)
+
+
+def get_research_model():
+    return ResearchModel()
+
+
+@router.post('/{research_id}/analysis')
+async def analyze(account_id: str, research_id: str, service: GrowthService = Depends(get_service), model=Depends(get_research_model)):
+    from .repository import Conflict, NotFound
+    try:
+        return await analyze_item(ResearchAnalysisRepository(service.repository.database), model, account_id, research_id)
+    except ResearchAnalysisFailure as exc:
+        raise HTTPException(422, str(exc)) from None
+    except NotFound:
+        raise HTTPException(404, '参考内容不存在。') from None
+    except Conflict:
+        raise HTTPException(409, '请确认当前定位，或等待/中断正在运行的分析。') from None
+
+
+@router.post('/{research_id}/analysis/interrupt')
+def interrupt_analysis(account_id: str, research_id: str, service: GrowthService = Depends(get_service)):
+    return call(ResearchAnalysisRepository(service.repository.database).interrupt, account_id, research_id)

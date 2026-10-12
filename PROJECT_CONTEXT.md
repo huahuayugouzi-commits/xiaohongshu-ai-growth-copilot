@@ -7,7 +7,10 @@ Phase 1: 完成。Phase 2: 完成并验收、冻结。
 Phase 3: PASS / FROZEN（2026-10-12），checkpoint 1711071。
 Research Task 1: PASS / FROZEN; user browser acceptance passed. 5 module cases,
 TypeScript/lint/build passed. Current-profile confirmation guide included.
-Current minimum task: Research AI Analysis → Structured Research Card.
+Research AI Analysis → Structured Research Card: implemented; awaiting user browser acceptance.
+10 deterministic/mock Research module tests passed; 1 real synthetic-reference case
+passed schema/evidence validation and semantic review. tsc/lint/build passed.
+No Topics implemented. Next step is manual Research Card acceptance, then TOP 3 task.
 Freeze evidence: docs/phase3-freeze.md. The following historical test log is retained;
 its earlier pending/blocker entries are superseded by the freeze evidence.
 Do not change Account / Diagnosis / Growth Data Layer except blocking regression.
@@ -59,7 +62,13 @@ PATCH /api/growth/accounts/{account_id}/research/{research_id}/confirmation.
 Existing Phase 2 repository/schema unchanged. Blank counts are null, explicit 0
 remains 0; account isolation enforced. UI uses current account and reloads from DB.
 Restart backend to register new routes; frontend build is ready at #/research.
-Stop here. No Research AI, Topics, scraping, bulk import or search implemented.
+Research analysis extends existing research_items.analysis JSON (no schema migration).
+POST research/{id}/analysis records a real workflow + source snapshot; result and
+workflow success are saved atomically. Evidence quotes are validated against source.
+POST research/{id}/analysis/interrupt supports explicit recovery of interrupted runs.
+Re-analysis clears confirmed_for_topic; user re-confirms after reviewing the new card.
+Source input and metrics remain unchanged; original Account/Diagnosis/data models frozen.
+Restart backend and refresh for new analysis routes/build. No Topics/scraping/bulk/search.
 Historical checklist below is completed:
 1. User configures Growth LLM in local .env; never request or print the key.
 2. Run scripts/Verify-Phase3.cmd in normal host terminal.
