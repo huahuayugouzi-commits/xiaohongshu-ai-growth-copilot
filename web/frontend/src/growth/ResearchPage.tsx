@@ -14,7 +14,7 @@ function count(value: string) {
   return number;
 }
 
-export default function ResearchPage({ accountId }: { accountId: string | null }) {
+export default function ResearchPage({ accountId, diagnosisConfirmed }: { accountId: string | null; diagnosisConfirmed: boolean }) {
   const [form, setForm] = useState(empty);
   const [items, setItems] = useState<ResearchItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,14 +23,15 @@ export default function ResearchPage({ accountId }: { accountId: string | null }
   const [notice, setNotice] = useState('');
   const path = `/accounts/${accountId}/research`;
   useEffect(() => {
-    if (!accountId) { setLoading(false); return; }
+    if (!accountId || !diagnosisConfirmed) { setLoading(false); return; }
     let active = true;
     request<ResearchItem[]>(path).then(data => { if (active) setItems(data); })
       .catch(e => { if (active) setError(e instanceof Error ? e.message : '读取失败'); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [accountId, path]);
+  }, [accountId, path, diagnosisConfirmed]);
   if (!accountId) return <section className="gc-card gc-empty"><h1>Research</h1><p>请先创建或选择账号。</p><a href="#/account">前往 Account</a></section>;
+  if (!diagnosisConfirmed) return <section className="gc-card gc-empty"><h1>Research</h1><p>请先确认当前 Profile 的定位诊断，再录入参考内容。历史版本的确认不会自动应用到新版本。</p><a href="#/account">前往 Account 确认定位</a></section>;
   const save = async () => {
     setBusy(true); setError(''); setNotice('');
     try {

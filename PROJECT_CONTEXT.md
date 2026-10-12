@@ -5,9 +5,9 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 V0.1 Fast Track.
 Phase 1: 完成。Phase 2: 完成并验收、冻结。
 Phase 3: PASS / FROZEN（2026-10-12），checkpoint 1711071。
-Research Task 1: Input + Persistence implemented; 5 module cases passed,
-TypeScript/lint/build passed. Browser manual acceptance of Research not yet claimed.
-Next minimum task: Research AI Analysis → Structured Research Card (not started).
+Research Task 1: PASS / FROZEN; user browser acceptance passed. 5 module cases,
+TypeScript/lint/build passed. Current-profile confirmation guide included.
+Current minimum task: Research AI Analysis → Structured Research Card.
 Freeze evidence: docs/phase3-freeze.md. The following historical test log is retained;
 its earlier pending/blocker entries are superseded by the freeze evidence.
 Do not change Account / Diagnosis / Growth Data Layer except blocking regression.
