@@ -25,6 +25,7 @@ class ModelError(Exception):
 class ModelReply:
     content: str
     usage: ProviderUsage | None = None
+    finish_reason: str | None = None
 
 
 @dataclass
@@ -111,7 +112,8 @@ class CompatibleModel:
                 # A provider must never be able to echo the credential into stored/displayed output.
                 if self.config.api_key in content:
                     raise ModelError("模型响应包含敏感配置内容，已拒绝保存。")
-                return ModelReply(content, provider_usage(payload))
+                reason = payload["choices"][0].get("finish_reason")
+                return ModelReply(content, provider_usage(payload), reason if reason in {"stop", "length", "content_filter"} else None)
         except httpx.TimeoutException:
             raise ModelError("模型请求超时，未保存诊断；可以手动重试。") from None
         except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):

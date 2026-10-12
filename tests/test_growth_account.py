@@ -31,10 +31,13 @@ class FixtureModel:
 
 
 @pytest.fixture
-def service():
+def service(monkeypatch):
     root = Path(__file__).resolve().parents[1] / ".scratch" / "growth-phase3-tests"
     directory = root / str(uuid4())
     directory.mkdir(parents=True)
+    # Unit/API tests must never discover the developer's credential-bearing .env.
+    import easel.growth.llm as adapter
+    monkeypatch.setattr(adapter, "PROJECT_ROOT", directory)
     db = Database(directory / "growth.sqlite3")
     db.initialize()
     service = GrowthService(AccountRepository(db), FixtureModel(), ProfileProjector(directory / "profiles" / "_growth"))

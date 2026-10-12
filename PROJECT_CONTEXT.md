@@ -4,11 +4,35 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 ## Current mode and status
 V0.1 Fast Track.
 Phase 1: 完成。Phase 2: 完成并验收、冻结。
-Phase 3: 代码完成，正在最终验收，尚未冻结。Phase 4: 未开始。
-This checkpoint is for cross-device handoff, not Phase 3 acceptance.
+Phase 3: PASS / FROZEN（2026-10-12）。Research Task 1: 开始。
+Freeze evidence: docs/phase3-freeze.md. The following historical test log is retained;
+its earlier pending/blocker entries are superseded by the freeze evidence.
+Do not change Account / Diagnosis / Growth Data Layer except blocking regression.
 Core flow: Account → Diagnosis → Research → TOP 3 Topics → Studio Draft.
 
 ## Phase 3 evidence
+- Latest minimum task: real output retention + semantic review completed 2026-10-12.
+  Repeated live runs exposed invalid/truncated JSON (D03 finish_reason=length).
+  Local prompt brevity/array-format fix; subsequent full Diagnosis regression:
+  41 passed (36 deterministic/mock + 5 real), 0 skipped, 37.45s.
+  Evidence/review: workspace outputs/Phase3-Live-Diagnosis-Review.md.
+  Browser diagnosis confirmation and V1/V2 chain remain pending; phase not frozen.
+  Show whole-project status after each minimum task: Account done; Diagnosis
+  acceptance in progress; Research / Topics / Studio / Core E2E not started.
+- Live D01–D05 schema/guard tests: **5 passed in 54.23s** after granting network
+  access on 2026-10-12. Initial restricted-network attempt failed at transport.
+  Current test does not retain outputs, so semantic review and result artifacts
+  remain pending; do not equate these passes with full AI quality acceptance.
+- Latest host rerun (2026-10-12): **506 passed / 0 failed / 71 skipped in
+  17.53s**. PYTEST_EXIT, TSC_EXIT, LINT_EXIT, BUILD_EXIT all 0; lint has 2
+  nonblocking legacy warnings. This supersedes the earlier failed host run.
+  Full regression blocker resolved; real model + browser diagnosis acceptance remains.
+- 2026-10-12 host regression: 505 passed / 1 failed / 71 skipped; tsc, lint,
+  production build exit 0. Failure: missing-model unit test cleared environment
+  but still discovered local .env, returning 200 instead of expected 422.
+  Fixed test fixture to use its isolated workspace for dotenv discovery. No key
+  inspected. Focused Account + deterministic Diagnosis regression: 36 passed.
+  Full host rerun after this fix remains required; phase not yet frozen.
 - Growth tests: 98 passed / 0 failed / 5 skipped (live model cases).
 - TypeScript: pass. Lint: pass (2 existing legacy warnings).
 - Production build: pass using vite build --configLoader native on Node 24.
@@ -26,6 +50,9 @@ Core flow: Account → Diagnosis → Research → TOP 3 Topics → Studio Draft.
   large radii, soft shadows. Result fact/hypothesis/missing visual check pending.
 
 ## Blockers and next task
+Current: Phase 3 blockers resolved. Implement only Research Input + Persistence;
+then stop and report. Research AI Analysis is the next task, not in current scope.
+Historical checklist below is completed:
 1. User configures Growth LLM in local .env; never request or print the key.
 2. Run scripts/Verify-Phase3.cmd in normal host terminal.
 3. Real Diagnosis E2E: D01 complete beginner, D02 sparse information,
