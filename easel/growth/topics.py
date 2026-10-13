@@ -171,6 +171,8 @@ async def recommend(repo, model, account_id, research_ids, retry_of=None):
         bundle = parse_topics(reply.content, context)
         return repo.complete(account_id, run.id, context, bundle, usage)
     except (Exception, asyncio.CancelledError) as exc:
+        if isinstance(exc, ModelError) and getattr(exc, 'usage', None) is not None:
+            usage = exc.usage
         message = str(exc) if isinstance(exc, ModelError) else '选题未通过结构/证据校验，或账号/参考内容已变化；未保存选题，请刷新重试。'
         if repo.get('workflow_runs', run.id, account_id=account_id).status == 'running':
             repo.finish_workflow(account_id, run.id, status='failed', error=message, usage=usage)

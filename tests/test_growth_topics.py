@@ -136,3 +136,19 @@ def test_live_top3(research):
                   'recommendation': rec.model_dump(), 'topics': [t.model_dump() for t in state['topics']],
                   'evidence': repo.recommendation_evidence(aid, rec.id)}
         (folder / 'topics-live-result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+
+
+def test_truncation_bad_case_rejects_and_preserves_actual_usage(research):
+    _, repo, aid, _, _, ids = setup(research)
+    def truncated(request):
+        body = json.loads(request.content)
+        assert body['max_tokens'] == 4000
+        return httpx.Response(200, json={'choices': [{'message': {'content': '{"topics":['}, 'finish_reason': 'length'}],
+                                        'usage': {'completion_tokens': 4000, 'total_tokens': 31114}})
+    model = TopicModel(ModelConfig('https://example.invalid/v1', 'fixture', 'secret-test-key'), httpx.MockTransport(truncated))
+    with pytest.raises(TopicFailure, match='finish_reason=length'):
+        asyncio.run(recommend(repo, model, aid, ids))
+    state = repo.state(aid)
+    assert not state['topics'] and not state['recommendations']
+    assert state['runs'][0].status == 'failed' and state['runs'][0].tokens == 31114
+    assert state['runs'][0].cost is None

@@ -3,6 +3,10 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 
 ## Current mode and status
 V0.1 Fast Track.
+2026-10-13 Topics blocking truncation reproduced and locally fixed (shorter
+output guidance; all guards retained). Same 4-source context generated 3 valid
+persisted topics, stop/3357 completion tokens; 6 Topics tests passed, 1 skipped.
+See docs/topics-bad-case.md. Browser refresh/evidence reacceptance pending.
 2026-10-13 Research blocking report: same-item recovery saved; 11 Research tests
 including normal live case passed. Original combined adapter rejection remains
 unclassified because historical raw response was not retained. Only safe error
