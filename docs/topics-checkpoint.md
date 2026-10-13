@@ -1,5 +1,12 @@
 # TOP 3 Topics checkpoint (2026-10-12)
 
+2026-10-13 acceptance: PASS / FROZEN. User completed browser acceptance after
+truncation fix eac8bf8. Latest Topics regression 6 passed/1 skipped; same-input
+real generation passed with 3 persisted topics and all evidence endpoints HTTP 200.
+Host full regression before the local bad-case fixes: 521 passed/73 skipped.
+Historical Research rejection remains unclassified (docs/research-bad-case.md).
+Next: Topic -> Studio Draft only; no further Topics prompt/UI optimization.
+
 Implemented, NOT FROZEN: host full regression and browser acceptance pending.
 Research AI accepted by user and frozen at 1081798.
 

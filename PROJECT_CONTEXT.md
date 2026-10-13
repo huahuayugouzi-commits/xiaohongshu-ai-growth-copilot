@@ -3,6 +3,10 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 
 ## Current mode and status
 V0.1 Fast Track.
+2026-10-13 Topics: PASS / FROZEN by user browser acceptance. Freeze supersedes
+earlier pending-browser notes. Do not optimize Topics prompt/UI or add features.
+Current minimum task: Topic -> Studio Draft, generation + manual edit/version
+persistence, using existing immutable Topic evidence and Draft data layer.
 2026-10-13 Topics blocking truncation reproduced and locally fixed (shorter
 output guidance; all guards retained). Same 4-source context generated 3 valid
 persisted topics, stop/3357 completion tokens; 6 Topics tests passed, 1 skipped.
