@@ -433,6 +433,8 @@ from easel.growth.research_api import router as research_router
 app.include_router(research_router)
 from easel.growth.topics_api import router as topics_router
 app.include_router(topics_router)
+from easel.growth.studio_api import router as studio_router
+app.include_router(studio_router)
 
 def _local_ports(env_port: str) -> set[str]:
     """本机写守卫放行的端口集合：固定的 7860/7870/5173，加上 `--port`/EASEL_PORT

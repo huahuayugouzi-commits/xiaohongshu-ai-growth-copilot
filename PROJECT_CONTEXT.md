@@ -7,6 +7,16 @@ V0.1 Fast Track.
 earlier pending-browser notes. Do not optimize Topics prompt/UI or add features.
 Current minimum task: Topic -> Studio Draft, generation + manual edit/version
 persistence, using existing immutable Topic evidence and Draft data layer.
+Topics freeze checkpoint: 6ef0ca9.
+Studio minimum implementation ready for acceptance (not frozen): independent
+studio.py/studio_model.py/studio_api.py + StudioPage. Existing Draft/Version
+tables reused, no migration. 20 affected tests passed, 3 live skipped; separate
+Studio run 4 deterministic + 1 real passed (12.90s). tsc/lint/build passed.
+AI drafts are neutral proposals, not first-person autobiographies; a reproduced
+invented-experience case is rejected automatically. Manual edits remain unverified.
+Full regression blocked by sandbox temp permissions; host run requested.
+Next: browser select Topic -> generate V1 -> edit/save V2 -> inspect V1/evidence
+-> refresh; then freeze Studio and proceed to final core E2E/evaluation, not extras.
 2026-10-13 Topics blocking truncation reproduced and locally fixed (shorter
 output guidance; all guards retained). Same 4-source context generated 3 valid
 persisted topics, stop/3357 completion tokens; 6 Topics tests passed, 1 skipped.
