@@ -54,6 +54,12 @@ def test_generate_edit_history_scope_and_reopen(research):
         assert result.status_code == 200
         versions=StudioRepository(repo.database).state(aid)['versions']
         assert {v.version for v in versions} == {1,2}
+        v2 = next(v for v in versions if v.version == 2)
+        assert v2.content.model_dump() == edited
+        assert v2.source_evidence == v1['source_evidence']
+        refreshed = client.get(path).json()
+        assert next(d for d in refreshed['drafts'] if d['id'] == did)['latest_version_id'] == v2.id
+        assert {v['version'] for v in refreshed['versions']} == {1, 2}
         assert next(v for v in versions if v.version==1).content.body == v1['content']['body']
         assert client.post(path+f'/drafts/{did}/versions',json={'content':edited,'expected_latest_id':v1['id']}).status_code == 409
         assert client.get('/api/growth/accounts/other/studio').status_code == 404

@@ -38,9 +38,16 @@ export default function StudioPage({ accountId }: { accountId: string | null }) 
     finally { setBusy(false); }
   };
   const save = async () => {
-    if (!draft || !content) return;
+    if (!draft || !content) { setError('没有可保存的草稿，请刷新后选择草稿。'); return; }
     setBusy(true); setError(''); setNotice('');
-    try { setData(await request<State>(`${path}/drafts/${draft.id}/versions`, 'POST', { content, expected_latest_id: draft.latest_version_id })); setVersionId(''); setNotice('已保存新版本，旧版本保留。'); }
+    try {
+      const value = await request<State>(`${path}/drafts/${draft.id}/versions`, 'POST', { content, expected_latest_id: draft.latest_version_id });
+      const savedDraft = value.drafts.find(d => d.id === draft.id);
+      const savedVersion = value.versions.find(v => v.id === savedDraft?.latest_version_id);
+      if (!savedDraft || !savedVersion) throw new Error('服务端已响应，但无法确认新版本；请刷新核对，避免重复保存。');
+      setData(value); setDraftId(savedDraft.id); setVersionId(savedVersion.id); setContent(savedVersion.content);
+      setNotice(`已保存为 V${savedVersion.version}`);
+    }
     catch (e) { setError(e instanceof Error ? e.message : '保存失败'); }
     finally { setBusy(false); }
   };
@@ -62,7 +69,10 @@ export default function StudioPage({ accountId }: { accountId: string | null }) 
     {draft && <section className="gc-card"><label>草稿<select disabled={busy} value={draft.id} onChange={e => { setDraftId(e.target.value); setVersionId(''); }}>{drafts.map(d => <option key={d.id} value={d.id}>{d.id.slice(0, 8)}</option>)}</select></label><label>版本<select disabled={busy} value={version?.id || ''} onChange={e => setVersionId(e.target.value)}>{versions.map(v => <option key={v.id} value={v.id}>V{v.version}{v.id === draft.latest_version_id ? ' · 最新' : ' · 历史只读'}</option>)}</select></label></section>}
     {version && content && <section className="gc-card"><span className="gc-badge gc-orange">AI 草稿 / 人工编辑 · 未验证，不是事实认证</span><p>修改不会自动保存。切换选题、版本或刷新前，请先保存。人工修改不会自动通过事实校验。</p>
       {([['title', '标题'], ['hook', 'Hook'], ['body', '正文'], ['cta', '结尾引导'], ['tags', '标签（每行一个）'], ['cover_text', '封面文字'], ['visual_suggestions', '图片建议（每行一个）'], ['facts_to_verify', '发布前待核实（每行一个）']] as [keyof Content, string][]).map(([field, label]) => <label key={field} style={{ display: 'block' }}>{label}<textarea style={{ width: '100%' }} rows={field === 'body' ? 12 : 2} disabled={busy || historical} value={Array.isArray(content[field]) ? (content[field] as string[]).join('\n') : content[field]} onChange={e => edit(field, e.target.value)} /></label>)}
-      <button disabled={busy || historical} onClick={() => { void save(); }}>保存为新版本</button>
+      <p>当前显示 V{version.version}{historical ? ' · 历史只读' : ' · 最新版本'}；旧版本可在上方版本菜单查看。</p>
+      <button disabled={busy || historical} onClick={() => { void save(); }}>{busy ? '正在保存 / 处理中…' : '保存为新版本'}</button>
+      {notice && <p className="gc-success" role="status" aria-live="polite">{notice}</p>}
+      {error && <p className="gc-error" role="alert">保存未完成：{error}。编辑内容仍保留，请勿刷新丢失修改。</p>}
       <details><summary>来源证据 · 生成时快照</summary><p>Topic {version.source_evidence.topic_id}</p><p>Profile {version.source_evidence.profile_version_id} · Diagnosis {version.source_evidence.diagnosis_id}</p>{version.source_evidence.research_snapshots.map(s => <article key={s.id}><h3>{s.title}</h3><p>{s.source_url || '未提供 URL'}</p><p>点赞 {s.likes ?? '未知'} · 收藏 {s.collects ?? '未知'} · 评论 {s.comments ?? '未知'}</p><p style={{ whiteSpace: 'pre-wrap' }}>{s.body}</p></article>)}</details>
     </section>}
     {data && topicId && !draft && <p>该选题暂无草稿，不展示示例内容。</p>}

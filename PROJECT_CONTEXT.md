@@ -3,6 +3,10 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 
 ## Current mode and status
 V0.1 Fast Track.
+Studio save-feedback fix: user DB already contained V1–V11; save events/API/SQLite
+worked. Feedback and version picker were above the long editor. Added inline
+success/error/current version beside Save and explicit latest-version selection.
+Studio regression 4 passed/1 live skipped; browser reacceptance pending. No Core E2E.
 2026-10-13 Topics: PASS / FROZEN by user browser acceptance. Freeze supersedes
 earlier pending-browser notes. Do not optimize Topics prompt/UI or add features.
 Current minimum task: Topic -> Studio Draft, generation + manual edit/version
