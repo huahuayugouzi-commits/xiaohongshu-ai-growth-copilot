@@ -1,7 +1,20 @@
 # Growth Copilot｜小红书 AI 增长助手
-Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution.
+Updated: 2026-10-13. Based on Easel; preserve Apache-2.0 LICENSE and attribution.
 
 ## Current mode and status
+**V0.1 DEMO READY — final human browser acceptance passed 2026-10-13.**
+All V0.1 modules frozen. Final account: V0.1 Final Validation 20261013.
+526 passed / 0 failed / 74 skipped; TypeScript/lint/build exit 0 (2 legacy warnings).
+Real HTTP/model Core E2E passed: Account/Profile -> Diagnosis -> 3 Research analyses
+-> confirmation -> TOP 3/evidence -> selected Topic -> Draft V1 -> edit V2 -> refresh.
+6 successful real-model workflows; one Research truncation failure retained as failed,
+then same-item recovery passed after bounded-output fix. No model mock substitution.
+Backend process restart retained exact V1/V2; SQLite integrity ok, 0 FK errors.
+User confirmed final account UI, cards/evidence, version switching and refresh.
+Final report: docs/v01-final-validation.md. Demo instructions: README.md.
+No V0.2 development authorized. Stop after final checkpoint.
+
+### Historical progress log (superseded by final status above)
 V0.1 Fast Track.
 2026-10-13 Studio: PASS / FROZEN by user browser acceptance after 44e3716.
 Current scope: V0.1 Final Validation only (full regression, real-model Core E2E,

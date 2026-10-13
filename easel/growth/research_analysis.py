@@ -78,7 +78,10 @@ comment_feedback 仅分析提供的评论样本；audience_pain_points 推测痛
 互动计数 null=未知，0=已知为零；不编造曝光、转化率或趋势。评论数不等于提供了评论文本。
 没有评论样本时 comment_feedback 必须 []；无依据的类别返回 []。
 missing_information 至少指出单篇数据无法验证的事项，缺少指标或评论时明确指出。
-保持简短，总计约 1000 汉字，每类优先一项。不得输出 Markdown。'''
+严格控制输出预算：每个分析类别最多1项，每条hypothesis≤60字，evidence只选1条最相关的连续原文短片段quote≤40字。
+保留全部类别键，无依据的类别返回[]；title_analysis与content_structure至少1项。
+missing_information只写2–3条，每条≤40字。全部文字值总计≤650汉字，避免逐条复述评论和重复背景。
+字段名和引用ID按Schema完整输出，保证JSON闭合，不得输出Markdown或额外解释。'''
 
 
 class ResearchModel:
