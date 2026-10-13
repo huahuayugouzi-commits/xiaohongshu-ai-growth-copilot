@@ -3,6 +3,9 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 
 ## Current mode and status
 V0.1 Fast Track.
+2026-10-13 Studio: PASS / FROZEN by user browser acceptance after 44e3716.
+Current scope: V0.1 Final Validation only (full regression, real-model Core E2E,
+blocking/high-priority fixes, final demo acceptance). No feature/UI/prompt polish.
 Studio save-feedback fix: user DB already contained V1–V11; save events/API/SQLite
 worked. Feedback and version picker were above the long editor. Added inline
 success/error/current version beside Save and explicit latest-version selection.

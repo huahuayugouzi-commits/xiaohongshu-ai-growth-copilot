@@ -1,5 +1,8 @@
 # Topic -> Studio Draft minimum checkpoint — 2026-10-13
 
+Acceptance update: PASS / FROZEN. User browser acceptance after save-feedback
+fix 44e3716. Scope now V0.1 Final Validation, no additional Studio development.
+
 Topics PASS / FROZEN at 6ef0ca9. Studio implemented, NOT FROZEN; acceptance pending.
 
 ## Delivered
