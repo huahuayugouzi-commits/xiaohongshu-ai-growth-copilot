@@ -110,10 +110,17 @@ def test_model_transport_contract_and_redaction():
         return httpx.Response(200, json={'choices': [{'message': {'content': json.dumps(card())}, 'finish_reason': 'stop'}], 'usage': {'total_tokens': 12}})
     model = ResearchModel(ModelConfig('https://example.invalid/v1', 'fixture', 'local-test-secret'), httpx.MockTransport(ok))
     assert asyncio.run(model.analyze({})).usage.tokens == 12
-    for content, finish in [('local-test-secret', 'stop'), ('{}', 'length')]:
+    for content, finish, reason in [('local-test-secret', 'stop', 'sensitive_exact_match'),
+                                    ('{}', 'length', 'finish_reason=length'),
+                                    (None, 'stop', 'non_text_content')]:
         model.transport = httpx.MockTransport(lambda r: httpx.Response(200, json={'choices': [{'message': {'content': content}, 'finish_reason': finish}]}))
         with pytest.raises(ModelError) as exc: asyncio.run(model.analyze({}))
         assert 'local-test-secret' not in str(exc.value)
+        assert reason in str(exc.value)
+    # Mentioning a configuration field is not the same as exposing its secret value.
+    model.transport = httpx.MockTransport(lambda r: httpx.Response(200, json={
+        'choices': [{'message': {'content': 'GROWTH_LLM_API_KEY'}, 'finish_reason': 'stop'}]}))
+    assert asyncio.run(model.analyze({})).finish_reason == 'stop'
 
 
 @pytest.mark.skipif(os.environ.get('GROWTH_LIVE_RESEARCH') != '1', reason='Explicit real model opt-in required')

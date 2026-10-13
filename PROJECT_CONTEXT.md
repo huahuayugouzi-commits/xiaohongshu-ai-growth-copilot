@@ -3,6 +3,12 @@ Updated: 2026-10-10. Based on Easel; preserve Apache-2.0 LICENSE and attribution
 
 ## Current mode and status
 V0.1 Fast Track.
+2026-10-13 Research blocking report: same-item recovery saved; 11 Research tests
+including normal live case passed. Original combined adapter rejection remains
+unclassified because historical raw response was not retained. Only safe error
+branch diagnostics changed; see docs/research-bad-case.md. No Topics/Studio edits.
+Host Research+Topics regression supplied by user: 521 passed, 73 skipped (24.77s),
+before this diagnostic-only Research change; supersedes earlier host-pending note.
 Phase 1: 完成。Phase 2: 完成并验收、冻结。
 Phase 3: PASS / FROZEN（2026-10-12），checkpoint 1711071。
 Research Task 1: PASS / FROZEN; user browser acceptance passed. 5 module cases,

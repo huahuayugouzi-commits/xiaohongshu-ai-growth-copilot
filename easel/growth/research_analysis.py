@@ -104,9 +104,13 @@ class ResearchModel:
             if response.status_code >= 300 or len(response.content) > 250000:
                 raise ModelError('模型服务请求失败或响应过大，请重试。')
             payload = response.json(); choice = payload['choices'][0]; content = choice['message']['content']
-            if not isinstance(content, str) or self.config.api_key in content or choice.get('finish_reason') == 'length':
-                raise ModelError('模型输出不完整或包含敏感配置，已拒绝保存。')
-            return ModelReply(content, provider_usage(payload))
+            if not isinstance(content, str):
+                raise ModelError('模型响应 content 不是文本 [non_text_content]，已拒绝保存。')
+            if self.config.api_key in content:
+                raise ModelError('模型输出命中完整 API Key [sensitive_exact_match]，已拒绝保存；不展示命中文本。')
+            if choice.get('finish_reason') == 'length':
+                raise ModelError('模型输出被截断 [finish_reason=length, max_tokens=3000]，已拒绝保存。')
+            return ModelReply(content, provider_usage(payload), choice.get('finish_reason'))
         except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):
             raise ModelError('模型请求超时、连接失败或响应无效，请重试。') from None
 
