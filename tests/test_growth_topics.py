@@ -40,7 +40,7 @@ def output(context):
         angle=f'从参考 {i+1} 的过程开展实验', hook='怎样减少整理遗漏？', why_now='已有整理技能，可用原文场景设计小实验',
         priority_reason='按制作成本排序，效果待验证', profile_basis=[{'field': 'skills', 'quote': '整理会议记录'}],
         evidence=[{'research_id': r['id'], 'field': 'body', 'quote': r['body']}],
-        assumptions=['受众有此需求，待验证'], risks=['没有历史表现，不能承诺增长']) for i, r in enumerate(context['research'])],
+        assumptions=['受众有此需求，待验证'], risks=['没有历史表现，不能承诺增长']) for i, r in enumerate((context['research'] * 3)[:3])],
         'not_recommended': ['暂不做缺少经验的复杂自动化教程']}
 
 
@@ -49,8 +49,10 @@ class Fake:
     async def recommend(self, context): return ModelReply(json.dumps(output(context), ensure_ascii=False))
 
 
-def test_top3_atomic_persistence_provenance_and_snapshot(research):
+@pytest.mark.parametrize('reference_count', [1, 2, 3])
+def test_top3_atomic_persistence_provenance_and_snapshot(research, reference_count):
     client, repo, aid, app, profile, ids = setup(research)
+    ids = ids[:reference_count]
     app.dependency_overrides[get_model] = Fake
     try:
         response = client.post(f'/api/growth/accounts/{aid}/topics/recommendations', json={'research_ids': ids})
@@ -60,6 +62,7 @@ def test_top3_atomic_persistence_provenance_and_snapshot(research):
         assert data['runs'][0]['status'] == 'succeeded' and data['runs'][0]['tokens'] is None
         topic = data['topics'][0]
         evidence = client.get(f'/api/growth/accounts/{aid}/topics/{topic["id"]}/evidence').json()
+        assert evidence['research_ids'] and set(evidence['research_ids']).issubset(ids)
         assert evidence['profile_version_id'] == profile.id and evidence['account_id'] == aid
         assert evidence['research_snapshots'][0]['likes'] is None and evidence['research_snapshots'][0]['collects'] == 0
         target_id = evidence['research_ids'][0]
@@ -72,7 +75,7 @@ def test_top3_atomic_persistence_provenance_and_snapshot(research):
 
 def test_prerequisites_no_partial_runs(research):
     _, repo, aid, _, profile, ids = setup(research)
-    for bad in (ids[:2], [ids[0]] * 3):
+    for bad in ([], ids + ['fourth-reference'], [ids[0]] * 2):
         with pytest.raises(Conflict): repo.begin(aid, bad, 'fixture')
     repo.confirm_research(aid, ids[0], False)
     with pytest.raises(Conflict): repo.begin(aid, ids, 'fixture')
@@ -80,6 +83,18 @@ def test_prerequisites_no_partial_runs(research):
     repo.create_profile_version(aid, {'fields': {'skills': '新技能'}}, expected_current_id=profile.id)
     with pytest.raises(Conflict): repo.begin(aid, ids, 'fixture')
     assert repo.list('workflow_runs', account_id=aid) == []
+
+
+@pytest.mark.parametrize('count', [0, 4])
+def test_api_rejects_reference_count_without_creating_run(research, count):
+    client, repo, aid, app, _, ids = setup(research)
+    app.dependency_overrides[get_model] = Fake
+    try:
+        selected = (ids + ['fourth-reference'])[:count]
+        response = client.post(f'/api/growth/accounts/{aid}/topics/recommendations', json={'research_ids': selected})
+        assert response.status_code == 422
+        assert repo.list('workflow_runs', account_id=aid) == []
+    finally: app.dependency_overrides.pop(get_model, None)
 
 
 def test_reject_schema_rank_and_fabricated_evidence(research):

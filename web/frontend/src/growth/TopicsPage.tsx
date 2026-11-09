@@ -18,11 +18,11 @@ export default function TopicsPage({ accountId, profileId, diagnosisId, confirme
   useEffect(() => {
     if (!accountId) return;
     let active = true;
-    request<State>(path).then(value => { if (active) { setData(value); setSelected(value.research.filter(r => r.confirmed_for_topic && r.analysis?.status === 'succeeded').slice(0, 5).map(r => r.id)); } })
+    request<State>(path).then(value => { if (active) { setData(value); setSelected(value.research.filter(r => r.confirmed_for_topic && r.analysis?.status === 'succeeded').slice(0, 3).map(r => r.id)); } })
       .catch(e => { if (active) setError(e instanceof Error ? e.message : '读取失败'); });
     return () => { active = false; };
   }, [accountId, path]);
-  if (!accountId) return <section className="gc-card"><h1>TOP 3 Topics</h1><p>请先建立账号。</p><a href="#/account">前往 Account</a></section>;
+  if (!accountId) return <section className="gc-card"><h1>TOP 3 Topics<span className="gc-title-subtitle" lang="zh-CN">智能选题</span></h1><p>请先建立账号。</p><a href="#/account">前往 Account</a></section>;
   const refresh = async () => { setData(await request<State>(path)); };
   const generate = async (retryOf?: string) => {
     setBusy(true); setError(''); setEvidence(null);
@@ -40,17 +40,17 @@ export default function TopicsPage({ accountId, profileId, diagnosisId, confirme
   const topics = data?.topics.filter(t => t.recommendation_id === batch?.id).sort((a, b) => a.rank - b.rank) || [];
   const eligible = data?.research.filter(r => r.confirmed_for_topic && r.analysis?.status === 'succeeded') || [];
   const running = data?.runs.some(r => r.status === 'running');
-  const ready = confirmed && selected.length >= 3 && selected.length <= 5 && !running;
+  const ready = confirmed && selected.length >= 1 && selected.length <= 3 && !running;
   return <>
-    <div className="gc-page-heading"><h1>TOP 3 Topics</h1><p>为什么这个账号现在适合做？基于定位与所选证据提出待验证选题，不保证流量或增长。</p></div>
+    <div className="gc-page-heading"><h1>TOP 3 Topics<span className="gc-title-subtitle" lang="zh-CN">智能选题</span></h1><p>为什么这个账号现在适合做？基于定位与所选证据提出待验证选题，不保证流量或增长。</p></div>
     {error && <div className="gc-error" role="alert">{error}</div>}
     {!data && !error && <p role="status">正在读取选题…</p>}
     {!confirmed && <div className="gc-notice">请先确认当前 Profile 的最新诊断。<a href="#/account">前往 Account</a></div>}
-    <section className="gc-card"><h2>选择 3–5 篇已分析、已确认的参考内容</h2>
-      {eligible.length < 3 && <p>当前仅 {eligible.length} 篇可用。请在 <a href="#/research">Research</a> 完成分析并确认至少 3 篇。</p>}
-      {eligible.map(r => <label key={r.id} style={{ display: 'block' }}><input type="checkbox" checked={selected.includes(r.id)} disabled={busy || !!running || (!selected.includes(r.id) && selected.length >= 5)} onChange={e => setSelected(v => e.target.checked ? [...v, r.id] : v.filter(id => id !== r.id))} /> {r.title}</label>)}
+    <section className="gc-card"><h2>选择 1–3 篇已分析、已确认的参考内容</h2>
+      {eligible.length < 1 && <p>当前仅 {eligible.length} 篇可用。请在 <a href="#/research">Research</a> 完成分析并确认至少 1 篇。</p>}
+      {eligible.map(r => <label key={r.id} style={{ display: 'block' }}><input type="checkbox" checked={selected.includes(r.id)} disabled={busy || !!running || (!selected.includes(r.id) && selected.length >= 3)} onChange={e => setSelected(v => e.target.checked ? [...v, r.id] : v.filter(id => id !== r.id))} /> {r.title}</label>)}
       <p>已选 {selected.length} 篇；生成会将 Profile、诊断和所选参考内容发送至配置的模型。</p>
-      <button disabled={!ready || busy} onClick={() => { void generate(); }}>{busy ? '处理中…' : '生成 TOP 3 选题'}</button>
+      <button className="gc-button-strong" disabled={!ready || busy} onClick={() => { void generate(); }}>{busy ? '处理中…' : '生成 TOP 3 选题'}</button>
       <button disabled={busy} onClick={() => { void refresh().catch(() => setError('刷新失败')); }}>刷新状态</button>
     </section>
     {data?.runs.slice(0, 3).map(run => <section className="gc-card" key={run.id}>

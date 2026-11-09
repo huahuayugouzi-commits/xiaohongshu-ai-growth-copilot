@@ -1,5 +1,15 @@
 # Growth Copilot｜小红书 AI 增长助手
-Updated: 2026-10-13. Based on Easel; preserve Apache-2.0 LICENSE and attribution.
+Updated: 2026-11-09. Based on Easel; preserve Apache-2.0 LICENSE and attribution.
+
+## Post-release checkpoint — 2026-11-09
+- Pearl-jade UI and reference-inspired Dashboard layout; account selector in sidebar, Chinese navigation, live account-scoped research/topics. No mock content inserted.
+- Topics now accepts 1–3 confirmed/analyzed references; exactly three output topics and evidence validation remain unchanged.
+- Account switching clears stale frontend state; delayed responses cannot replace another account. New-account mode and rename guidance clarified; no schema migration.
+- Research shows newest saved references first. Existing historical data retained.
+- TypeScript and production build passed; lint has two existing warnings. Frontend account-isolation regression passed. Previous full V0.1 results below are historical, not a new full-suite run.
+- Production build on this Windows environment uses `vite build --configLoader native` to avoid default-loader spawn EPERM.
+- Local service available on port 7860. No cloud deployment or server purchase performed. Next: choose hosting, confirm eligibility/filing, then deploy with persistent SQLite and private credentials.
+- Remaining limitations: no multi-user permissions; homepage source covers are decorative; reference image is a layout direction, not exact photo reproduction.
 
 ## Current mode and status
 **V0.1 DEMO READY — final human browser acceptance passed 2026-10-13.**

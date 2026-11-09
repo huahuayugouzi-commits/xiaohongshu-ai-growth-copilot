@@ -15,7 +15,7 @@ def get_model(): return TopicModel()
 
 class GenerateRequest(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    research_ids: list[str] = Field(min_length=3, max_length=5)
+    research_ids: list[str] = Field(min_length=1, max_length=3)
     retry_of: str | None = None
 
 
@@ -30,7 +30,7 @@ async def generate(account_id: str, data: GenerateRequest, repo=Depends(reposito
         await recommend(repo, model, account_id, data.research_ids, data.retry_of)
         return repo.state(account_id)
     except NotFound: raise HTTPException(404, '账号或参考内容不存在。') from None
-    except Conflict: raise HTTPException(409, '请确认当前定位并选择 3–5 篇已分析且已确认的参考内容；有运行任务时请等待或中断。内容过长时请缩短后重试。') from None
+    except Conflict: raise HTTPException(409, '请确认当前定位并选择 1–3 篇已分析且已确认的参考内容；有运行任务时请等待或中断。内容过长时请缩短后重试。') from None
     except TopicFailure as exc: raise HTTPException(422, str(exc)) from None
     except sqlite3.Error: raise HTTPException(503, '数据库暂时不可用，未确认任务成功。') from None
 

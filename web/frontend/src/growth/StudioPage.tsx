@@ -27,7 +27,7 @@ export default function StudioPage({ accountId }: { accountId: string | null }) 
   const versions = data?.versions.filter(v => v.draft_id === draft?.id).sort((a, b) => b.version - a.version) || [];
   const version = versions.find(v => v.id === versionId) || versions[0];
   useEffect(() => { setContent(version?.content || null); }, [version]);
-  if (!accountId) return <section className="gc-card"><h1>Studio</h1><a href="#/account">请先建立账号</a></section>;
+  if (!accountId) return <section className="gc-card"><h1>Studio<span className="gc-title-subtitle" lang="zh-CN">内容创作</span></h1><a href="#/account">请先建立账号</a></section>;
   const running = data?.runs.some(r => r.status === 'running');
   const historical = !!version && version.id !== draft?.latest_version_id;
   const refresh = async () => { setData(await request<State>(path)); };
@@ -53,13 +53,13 @@ export default function StudioPage({ accountId }: { accountId: string | null }) 
   };
   const edit = (field: keyof Content, value: string) => setContent(v => v ? { ...v, [field]: ['tags', 'visual_suggestions', 'facts_to_verify'].includes(field) ? value.split('\n') : value } : v);
   return <>
-    <div className="gc-page-heading"><h1>Studio Draft</h1><p>选题 → AI 草稿 → 人工核实与编辑 → 新版本。不自动发布。</p></div>
+    <div className="gc-page-heading"><h1>Studio Draft<span className="gc-title-subtitle" lang="zh-CN">AI 内容草稿</span></h1><p>选题 → AI 草稿 → 人工核实与编辑 → 新版本。不自动发布。</p></div>
     {error && <div className="gc-error" role="alert">{error}</div>}{notice && <div className="gc-success" role="status">{notice}</div>}
     {!data && !error && <p role="status">正在读取草稿…</p>}
     <section className="gc-card"><label>选择 Topic<select aria-label="选择 Topic" disabled={busy || !!running} value={topicId} onChange={e => { setTopicId(e.target.value); setDraftId(''); setVersionId(''); setNotice(''); }}><option value="">请选择</option>{data?.topics.map(t => <option key={t.id} value={t.id}>TOP {t.rank} · {t.content.title} · {t.id.slice(0, 6)}</option>)}</select></label>
       {!data?.topics.length && <p>暂无选题，请先完成 <a href="#/topics">Topics</a>。</p>}
       <p>仅为当前已确认定位的选题生成草稿；模型会收到该选题及其来源快照。再次生成会新建一份草稿，不覆盖旧稿。</p>
-      <button disabled={!topicId || busy || !!running} onClick={() => { void generate(); }}>{busy ? '处理中…' : '生成 AI 草稿'}</button>
+      <button className="gc-button-strong" disabled={!topicId || busy || !!running} onClick={() => { void generate(); }}>{busy ? '处理中…' : '生成 AI 草稿'}</button>
       <button disabled={busy || !!content} onClick={() => { void refresh().catch(() => setError('读取失败')); }}>刷新状态</button>
     </section>
     {data?.runs.slice(0, 3).map(run => <section className="gc-card" key={run.id}><p>草稿任务：{run.status} · 重试 {run.retry_count} · tokens {run.tokens ?? '未知'} · cost {run.cost ?? '未知'}</p>{run.error && <p role="alert">{run.error}</p>}
@@ -70,7 +70,7 @@ export default function StudioPage({ accountId }: { accountId: string | null }) 
     {version && content && <section className="gc-card"><span className="gc-badge gc-orange">AI 草稿 / 人工编辑 · 未验证，不是事实认证</span><p>修改不会自动保存。切换选题、版本或刷新前，请先保存。人工修改不会自动通过事实校验。</p>
       {([['title', '标题'], ['hook', 'Hook'], ['body', '正文'], ['cta', '结尾引导'], ['tags', '标签（每行一个）'], ['cover_text', '封面文字'], ['visual_suggestions', '图片建议（每行一个）'], ['facts_to_verify', '发布前待核实（每行一个）']] as [keyof Content, string][]).map(([field, label]) => <label key={field} style={{ display: 'block' }}>{label}<textarea style={{ width: '100%' }} rows={field === 'body' ? 12 : 2} disabled={busy || historical} value={Array.isArray(content[field]) ? (content[field] as string[]).join('\n') : content[field]} onChange={e => edit(field, e.target.value)} /></label>)}
       <p>当前显示 V{version.version}{historical ? ' · 历史只读' : ' · 最新版本'}；旧版本可在上方版本菜单查看。</p>
-      <button disabled={busy || historical} onClick={() => { void save(); }}>{busy ? '正在保存 / 处理中…' : '保存为新版本'}</button>
+      <button className="gc-button-strong" disabled={busy || historical} onClick={() => { void save(); }}>{busy ? '正在保存 / 处理中…' : '保存为新版本'}</button>
       {notice && <p className="gc-success" role="status" aria-live="polite">{notice}</p>}
       {error && <p className="gc-error" role="alert">保存未完成：{error}。编辑内容仍保留，请勿刷新丢失修改。</p>}
       <details><summary>来源证据 · 生成时快照</summary><p>Topic {version.source_evidence.topic_id}</p><p>Profile {version.source_evidence.profile_version_id} · Diagnosis {version.source_evidence.diagnosis_id}</p>{version.source_evidence.research_snapshots.map(s => <article key={s.id}><h3>{s.title}</h3><p>{s.source_url || '未提供 URL'}</p><p>点赞 {s.likes ?? '未知'} · 收藏 {s.collects ?? '未知'} · 评论 {s.comments ?? '未知'}</p><p style={{ whiteSpace: 'pre-wrap' }}>{s.body}</p></article>)}</details>

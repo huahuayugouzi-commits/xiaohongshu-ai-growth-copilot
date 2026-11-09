@@ -33,8 +33,8 @@ export default function ResearchPage({ accountId, diagnosisConfirmed }: { accoun
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [accountId, path, diagnosisConfirmed]);
-  if (!accountId) return <section className="gc-card gc-empty"><h1>Research</h1><p>请先创建或选择账号。</p><a href="#/account">前往 Account</a></section>;
-  if (!diagnosisConfirmed) return <section className="gc-card gc-empty"><h1>Research</h1><p>请先确认当前 Profile 的定位诊断，再录入参考内容。历史版本的确认不会自动应用到新版本。</p><a href="#/account">前往 Account 确认定位</a></section>;
+  if (!accountId) return <section className="gc-card gc-empty"><h1>Research<span className="gc-title-subtitle" lang="zh-CN">内容研究</span></h1><p>请先创建或选择账号。</p><a href="#/account">前往 Account</a></section>;
+  if (!diagnosisConfirmed) return <section className="gc-card gc-empty"><h1>Research<span className="gc-title-subtitle" lang="zh-CN">内容研究</span></h1><p>请先确认当前 Profile 的定位诊断，再录入参考内容。历史版本的确认不会自动应用到新版本。</p><a href="#/account">前往 Account 确认定位</a></section>;
   const save = async () => {
     setBusy(true); setError(''); setNotice('');
     try {
@@ -67,7 +67,7 @@ export default function ResearchPage({ accountId, diagnosisConfirmed }: { accoun
     } finally { setBusy(false); }
   };
   return <>
-    <div className="gc-page-heading"><span className="gc-eyebrow">RESEARCH · MANUAL INPUT</span><h1>保存值得研究的参考内容</h1><p>手动保存后可逐篇分析，不自动抓取。未知互动数据请留空，已知为零请填 0。点击分析会将本篇内容发送给你配置的模型。</p></div>
+    <div className="gc-page-heading"><span className="gc-eyebrow">RESEARCH · MANUAL INPUT</span><h1>Research<span className="gc-title-subtitle" lang="zh-CN">内容研究</span></h1><p>保存值得研究的参考内容。手动保存后可逐篇分析，不自动抓取。未知互动数据请留空，已知为零请填 0。点击分析会将本篇内容发送给你配置的模型。</p></div>
     {error && <div className="gc-error" role="alert">{error}<button onClick={() => window.location.reload()}>刷新重试</button></div>}
     {notice && <div className="gc-success" role="status">{notice}</div>}
     <form className="gc-card gc-profile-form" onSubmit={e => { e.preventDefault(); void save(); }}>
@@ -82,7 +82,7 @@ export default function ResearchPage({ accountId, diagnosisConfirmed }: { accoun
     </form>
     <section aria-label="已保存参考内容"><h2>已保存参考内容</h2>
       {loading ? <p role="status">正在读取…</p> : !items.length && <p>尚无参考内容。先手动保存一篇。</p>}
-      {items.map(item => <article className="gc-card" key={item.id}>
+      {items.slice().reverse().map(item => <article className="gc-card" key={item.id}>
         <div className="gc-card-top"><h3>{item.title}</h3><span className="gc-badge">{item.confirmed_for_topic ? '已确认用于选题' : '未确认用于选题'}</span></div>
         {item.source_url && <p>来源：{item.source_url}</p>}
         <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{item.body}</p>

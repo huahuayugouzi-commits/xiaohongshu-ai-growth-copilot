@@ -72,8 +72,8 @@ def parse_topics(content, context):
 
 class TopicRepository(GrowthRepository):
     def _context(self, conn, account_id, research_ids):
-        if not 3 <= len(research_ids) <= 5 or len(set(research_ids)) != len(research_ids):
-            raise Conflict('Select 3–5 distinct references')
+        if not 1 <= len(research_ids) <= 3 or len(set(research_ids)) != len(research_ids):
+            raise Conflict('Select 1–3 distinct references')
         account = self._get(conn, 'accounts', account_id, account_id)
         if not account.current_profile_version_id: raise Conflict('Profile required')
         profile = self._get(conn, 'profile_versions', account.current_profile_version_id, account_id)

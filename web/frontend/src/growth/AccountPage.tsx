@@ -26,9 +26,10 @@ export default function AccountPage({ state, newMode, busy, onSave, onGenerate, 
   const [fields, setFields] = useState<ProfileFields>(initial);
   const dirty = name !== (account?.name || '') || type !== (account?.creator_type || 'new') || JSON.stringify(fields) !== JSON.stringify(initial);
   return <>
-    <div className="gc-page-heading"><span className="gc-eyebrow">01 / ACCOUNT CONTEXT</span><h1>让增长，从了解你开始。</h1><p>记录真实背景与创作目标，形成一个可以不断验证的定位假设。</p></div>
+    <div className="gc-page-heading"><span className="gc-eyebrow">01 / ACCOUNT CONTEXT</span><h1>Account<span className="gc-title-subtitle" lang="zh-CN">账号定位</span></h1><p>让增长，从了解你开始。记录真实背景与创作目标，形成一个可以不断验证的定位假设。</p></div>
     <div className="gc-account-layout">
-      <form className="gc-card gc-profile-form" onSubmit={e => { e.preventDefault(); onSave({ name: name.trim(), creator_type: type, profile: fields, expected_current_id: profile?.id || null }); }}>
+      <form className="gc-card gc-profile-form" onSubmit={e => { e.preventDefault(); if (account && name.trim() !== account.name && !window.confirm('这只会修改当前账号名称，历史内容仍属于此账号，不会创建独立账号。如需另一个账号，请取消并点击「＋ 新建账号」。继续改名？')) return; onSave({ name: name.trim(), creator_type: type, profile: fields, expected_current_id: profile?.id || null }); }}>
+        <p className="gc-notice">{account ? '正在编辑当前账号；保存会创建资料版本，不会创建另一个账号。独立运营账号请使用「＋ 新建账号」。' : '正在创建独立账号；不会继承其他账号的参考内容、选题或草稿。'} New Creator / Existing Creator 仅表示创作者类型。</p>
         <div className="gc-card-top"><h2>账号资料</h2><span className="gc-badge gc-green">FACT · 用户自述</span></div>
         <fieldset disabled={busy}><legend className="gc-sr-only">创作者资料</legend>
           <div className="gc-creator-types">
@@ -38,7 +39,7 @@ export default function AccountPage({ state, newMode, busy, onSave, onGenerate, 
           <label>账号名称 <span className="gc-required">*</span><input required maxLength={100} value={name} onChange={e => setName(e.target.value)} placeholder="给你的创作账号起个名字" /></label>
           <div className="gc-form-grid">{[...baseFields, ...(type === 'existing' ? existingFields : [])].map(([key, title, placeholder]) => <label key={key}>{title}<textarea rows={3} maxLength={3000} value={fields[key]} placeholder={placeholder} onChange={e => setFields(p => ({ ...p, [key]: e.target.value }))} /></label>)}</div>
           <p className="gc-small">可留空。不填写不代表你不具备；目标不会被当作已经实现的事实。</p>
-          <div className="gc-form-actions"><span className="gc-muted">{profile ? `当前 Profile V${profile.version} · ${dirty ? '有未保存修改' : '资料已保存'}` : '尚未保存至数据库'}</span><button className="gc-button-strong" type="submit" disabled={!name.trim() || busy}>{busy ? '处理中…' : '保存账号资料'}</button></div>
+          <div className="gc-form-actions"><span className="gc-muted">{profile ? `当前 Profile V${profile.version} · ${dirty ? '有未保存修改' : '资料已保存'}` : '尚未保存至数据库'}</span><button className="gc-button-strong" type="submit" disabled={!name.trim() || busy}>{busy ? '处理中…' : account ? '保存当前账号的新版本' : '创建独立账号'}</button></div>
         </fieldset>
       </form>
       <aside className="gc-card gc-guide"><span className="gc-eyebrow">EVIDENCE FIRST</span><h2>好的定位，<br />不是一个标签。</h2><p>它是你的真实经历、可提供的价值与目标用户需求之间，一个值得验证的交集。</p>
