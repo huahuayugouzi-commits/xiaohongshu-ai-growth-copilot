@@ -22,3 +22,5 @@ TypeScript: exit 0. Frontend code unchanged; existing built bundle reused. No cl
 Shared demo workspace and shared login; not independent-user isolation. 4 AI attempts/minute and 30 total; this is not a monetary spend guarantee. No private real data may be entered. Credentials only in a local ignored file, never this report. Closing tunnel ends public access; data persists. No public-ready multi-user or production certification is implied.
 
 Final public recheck after restart and chunked-body compatibility fix: login page 200, anonymous state 401, login 303, protected home 200, exactly one synthetic demo account. Restart retained both Draft versions. Public sensitive/configuration/database routes returned 404 after login.
+
+Login correction: changed Referrer-Policy from no-referrer to same-origin. Native HTML form posts can otherwise send Origin:null and fail the strict CSRF guard; prior manual HTTP Origin tests missed this browser behavior. Cross-site/null Origins remain rejected. Focused tests: 4 passed. Live public recheck: GET login 200 with same-origin policy; POST login 303; authenticated state 200. Human browser retry still pending.

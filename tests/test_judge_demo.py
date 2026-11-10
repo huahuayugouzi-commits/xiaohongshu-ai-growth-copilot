@@ -22,6 +22,10 @@ def login(client, password):
 
 def test_auth_and_closed_legacy_routes(tmp_path):
     root, dist, app, client, password = setup(tmp_path)
+    # Native HTML POST forms must retain same-origin Origin; no-referrer sends null.
+    assert client.get('/login').headers['referrer-policy'] == 'same-origin'
+    assert client.post('/login', data={'username': 'judge', 'password': password}, headers={'Origin': 'null'}).status_code == 403
+    assert client.post('/login', data={'username': 'judge', 'password': password}, headers={'Origin': 'https://attacker.example'}).status_code == 403
     paths = ['/api/growth/state', '/assets/main.js', '/api/env', '/api/personas', '/api/outputs', '/.env', '/docs', '/openapi.json', '/data/demo.sqlite3', '/api/accounts/x/credentials']
     for path in paths:
         assert client.get(path).status_code == 401
