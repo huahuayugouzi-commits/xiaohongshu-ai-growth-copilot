@@ -1,4 +1,5 @@
 import json
+import re
 import sqlite3
 from fastapi.testclient import TestClient
 from web.judge_demo import create_app, initialize
@@ -17,7 +18,8 @@ def setup(tmp_path):
 
 
 def login(client, password):
-    return client.post('/login', data={'username': 'judge', 'password': password}, headers={'Origin': 'http://testserver'}, follow_redirects=False)
+    token = re.search(r'name="csrf" value="([^"]+)"', client.get('/login').text).group(1)
+    return client.post('/login', data={'username': 'judge', 'password': password, 'csrf': token}, headers={'Origin': 'http://testserver'}, follow_redirects=False)
 
 
 def test_auth_and_closed_legacy_routes(tmp_path):
@@ -70,7 +72,8 @@ def test_ai_limit_persists_and_public_secure_cookie(tmp_path):
     assert response.status_code == 429
     (root / 'public-origin.txt').write_text('https://judge-test.trycloudflare.com')
     public = TestClient(create_app(root, dist), base_url='https://judge-test.trycloudflare.com')
-    response = public.post('/login', data={'username': 'judge', 'password': password}, headers={'Origin': 'https://judge-test.trycloudflare.com'}, follow_redirects=False)
+    token = re.search(r'name="csrf" value="([^"]+)"', public.get('/login').text).group(1)
+    response = public.post('/login', data={'username': 'judge', 'password': password, 'csrf': token}, headers={'Origin': 'https://judge-test.trycloudflare.com'}, follow_redirects=False)
     assert response.status_code == 303
     assert 'Secure' in response.headers['set-cookie']
     assert public.get('/api/growth/state').status_code == 200
@@ -94,3 +97,18 @@ def test_personal_database_override_cannot_enter_demo(tmp_path, monkeypatch):
     for path in ('/api/output/private.sqlite3', '/assets/%2e%2e/%2e%2e/.env', '/static/anything', '/profiles/identity.md'):
         assert client.get(path).status_code == 404
     assert GrowthRepository(private).get('accounts', owner.id, account_id=owner.id).name == 'PRIVATE_SENTINEL'
+
+
+def test_browser_suppressed_origin_requires_signed_cookie_bound_form(tmp_path):
+    root, dist, app, client, password = setup(tmp_path)
+    for origin in (None, 'null', 'http://testserver'):
+        token = re.search(r'name="csrf" value="([^"]+)"', client.get('/login').text).group(1)
+        headers = {} if origin is None else {'Origin': origin}
+        response = client.post('/login', data={'username': 'judge', 'password': password, 'csrf': token}, headers=headers, follow_redirects=False)
+        assert response.status_code == 303
+    token = re.search(r'name="csrf" value="([^"]+)"', client.get('/login').text).group(1)
+    assert client.post('/login', data={'username': 'judge', 'password': password, 'csrf': token}, headers={'Origin': 'https://attacker.example'}).status_code == 403
+    stranger = TestClient(app)
+    assert stranger.post('/login', data={'username': 'judge', 'password': password, 'csrf': token}).status_code == 403
+    assert client.post('/login', data={'username': 'judge', 'password': password, 'csrf': 'forged'}, headers={'Origin': 'null'}).status_code == 403
+    assert client.post('/api/growth/accounts', json={}, headers={'Origin': 'null'}).status_code == 403
