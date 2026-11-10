@@ -1,6 +1,13 @@
 # Growth Copilot｜小红书 AI 增长助手
 Updated: 2026-11-09. Based on Easel; preserve Apache-2.0 LICENSE and attribution.
 
+## Temporary judge demo — 2026-11-10
+- Scope supersedes the pending multi-user VPS plan: one shared judge login, Cloudflare Quick Tunnel, no server purchase or migration.
+- Independent `web.judge_demo` entrypoint only exposes authenticated Growth routes and built frontend; personal SQLite and legacy Easel routes are excluded.
+- New demo SQLite/projections/credentials live under ignored `data/judge-demo`; model API key stays server-side. Four real model calls passed over public HTTPS using fictional inputs, with draft V1/V2 preserved.
+- Core deterministic regression: 121 passed / 3 skipped before an additional private-database isolation test; final focused demo suite 4 passed. TypeScript passed. See docs/judge-demo.md and docs/judge-demo-validation.md for limits and unverified browser/launcher checks.
+- Browser tool timed out; do not claim independent browser E2E passed. No V0.2 or multi-user migration performed.
+
 ## Post-release checkpoint — 2026-11-09
 - Pearl-jade UI and reference-inspired Dashboard layout; account selector in sidebar, Chinese navigation, live account-scoped research/topics. No mock content inserted.
 - Topics now accepts 1–3 confirmed/analyzed references; exactly three output topics and evidence validation remain unchanged.
