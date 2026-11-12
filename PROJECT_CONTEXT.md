@@ -1,4 +1,12 @@
 # Growth Copilot｜小红书 AI 增长助手
+## Private VPS preparation — 2026-11-12 (current)
+- User approved option A: new empty server database; local historical data remains untouched and excluded from deployment.
+- Independent users/ownership now implemented in `web/production.py` and `easel/growth/private_auth.py`; local and shared-judge entrypoints remain unchanged.
+- Host-run full regression: 541 passed, 74 skipped; frontend build succeeded (663ms). Dedicated user-isolation suite rerun: 5 passed. No paid model calls.
+- Production scripts/docs: `deploy/ubuntu24/`, `docs/deployment-ubuntu24.md`, `docs/private-deployment-validation.md`.
+- Next: obtain server IP/SSH/domain through safe channels, deploy to authorized Ubuntu24 host, verify HTTPS, two-user isolation, persistence and backup. Server/model E2E pending; do not claim already online.
+- This resumes the private-user VPS plan; the older shared-judge tunnel below is historical, not the selected production architecture.
+
 Updated: 2026-11-09. Based on Easel; preserve Apache-2.0 LICENSE and attribution.
 
 ## Temporary judge demo — 2026-11-10

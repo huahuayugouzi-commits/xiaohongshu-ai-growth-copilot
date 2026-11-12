@@ -1,0 +1,14 @@
+[Unit]
+Description=Growth Copilot private SQLite backup
+[Service]
+Type=oneshot
+User=growth
+Group=growth
+WorkingDirectory=/opt/growth-copilot/current
+ExecStart=/bin/bash /opt/growth-copilot/current/deploy/ubuntu24/backup.sh
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/growth-copilot /var/backups/growth-copilot

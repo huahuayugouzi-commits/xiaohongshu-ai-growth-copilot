@@ -28,6 +28,10 @@ export async function request<T>(path: string, method = 'GET', body?: unknown): 
       method, headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
       body: body === undefined ? undefined : JSON.stringify(body),
     });
+    if (response.status === 401) {
+      window.location.assign('/login');
+      throw new Error('登录已过期，请重新登录。');
+    }
     const data = await response.json().catch(() => null);
     if (!response.ok) {
       const message = typeof data?.detail === 'string' ? data.detail : '请求未通过校验，请检查输入后重试。';
