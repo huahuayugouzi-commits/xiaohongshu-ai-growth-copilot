@@ -2,6 +2,12 @@
 
 **小红书 AI 增长助手**
 
+面向知识型、经验型早期创作者的内容决策工具，帮助你更有依据地决定：**下一篇发什么，为什么值得发？**
+
+结合账号背景、定位与手动导入的参考内容，提供 3 个可追溯依据的候选选题，并将选定方向转化为可编辑、可保存历史版本的草稿。适合职业转型、职场技能、学习方法、效率工具与专业知识分享等方向。
+
+Evidence-based content planning for early-stage creators: account positioning → research → TOP 3 topics → editable drafts. Recommendations are hypotheses for human review, not predictions of viral performance.
+
 从真实账号背景出发，形成定位假设，由用户确认后再进入内容研究与创作。
 Growth Copilot is built upon the open-source [Easel](https://github.com/ZJU-REAL/Easel) project.
 
@@ -11,7 +17,7 @@ Growth Copilot is built upon the open-source [Easel](https://github.com/ZJU-REAL
 - Diagnosis：真实兼容模型调用、结构化结果、Fact Lock 检查、人工确认。
 - Dashboard：读取数据库中的账号、定位、版本和流程状态。
 - Research：手动输入参考内容、真实 AI 分析、结构化研究卡与原文引用。
-- Topics：基于当前已确认定位和 3–5 篇已分析/确认参考内容，生成 TOP 3 推荐与证据。
+- Topics：基于当前已确认定位和 1–3 篇已分析/确认参考内容，生成 TOP 3 推荐与证据。
 - Studio：选择 Topic 生成草稿，人工编辑创建新版本，保留 V1/V2 与来源快照。
 
 模型未配置时可保存资料；诊断显示配置错误，不使用模拟结果兜底。
@@ -21,7 +27,7 @@ AI 建议是待验证假设，不是效果承诺或已核实事实。
 
 面向不知道如何定位的新手创作者，以及缺少选题、产出低效的已有创作者。
 回答“我适合写什么、为什么适合、依据是什么、怎样写成可编辑草稿”。
-这是面向 AI 产品经理作品集的本地单用户 MVP，不承诺流量、涨粉或变现。
+V0.1 已完成核心 Demo 闭环，并提供管理员开通账号的私有试用部署入口；不开放注册，不承诺流量、涨粉或变现。
 
 ## 核心业务与 AI 工作流
 
@@ -56,9 +62,9 @@ Studio 虚构用户经历增加中性方案约束及拒绝规则；保存无反�
 ## Demo 操作流程
 
 1. Account 保存资料，生成 Diagnosis，阅读假设与缺失信息，确认定位。
-2. Research 手动导入 3–5 篇有权使用的内容；未知指标留空，明确零值填 0。
+2. Research 手动导入有权使用的参考内容；未知指标留空，明确零值填 0。
 3. 逐篇分析、查看研究卡和引用，确认用于选题。
-4. Topics 选择参考内容，生成 TOP 3，检查“为什么现在适合”与来源证据。
+4. Topics 选择 1–3 篇已分析、已确认的参考内容，生成 TOP 3，检查“为什么现在适合”与来源证据。
 5. Studio 选择当前定位对应的 Topic，生成 Draft V1，核实正文及来源。
 6. 修改明显字段，保存为 V2；按钮旁显示实际版本号，切换查看 V1/V2。
 7. 刷新确认数据保留。再次生成会另建草稿，不覆盖旧稿。
@@ -83,6 +89,14 @@ Studio 虚构用户经历增加中性方案约束及拒绝规则；保存无反�
 连接被拒绝时先检查后端是否仍运行。只演示生产构建不必启动 5173。
 
 不要将本地单用户服务暴露到公网；原有主机/Origin 防护不是用户认证。
+
+## 私有试用与开源范围
+
+`web/production.py` 提供管理员预置登录账号、用户数据隔离及服务端访问保护；Ubuntu 24.04 部署文件位于 `deploy/ubuntu24/`，采用 systemd、Caddy HTTPS 与持久化 SQLite。参见[部署说明](docs/deployment-ubuntu24.md)与[部署验证记录](docs/private-deployment-validation.md)；验证记录反映当时的本地验收范围，不代表所有部署环境已验收。
+
+源码公开不等于线上服务开放注册，也不包含可用测试密码。API Key、`.env`、本地数据库、个人内容与原始模型响应不应提交到仓库。新部署使用独立数据目录，按部署说明配置凭据并验证备份。
+
+私有部署准备阶段记录的完整回归为 **541 passed、74 skipped**，专用安全测试 **5 passed**；这是历史验证记录，本次文档更新未重跑测试，跳过项不计为通过。
 
 ## 模型配置
 
@@ -111,7 +125,7 @@ Studio 虚构用户经历增加中性方案约束及拒绝规则；保存无反�
 
 ## Known Limitations
 
-- 本地单用户 Demo，不是生产 SaaS；不要暴露公网。
+- 本地入口是单用户 Demo，不应直接暴露公网；私有试用需使用受保护的生产入口，不是完整商业 SaaS。
 - 不含自动抓取/发布、图片生成、QC、Metrics、Strategy Update 等 V0.2 功能。
 - 参考内容与计数来自用户输入，不能核实来源真伪、授权、统计口径或实时平台趋势。
 - 校验只能拦截已知风险，不保证零幻觉；AI 建议与人工编辑都需要审阅。
